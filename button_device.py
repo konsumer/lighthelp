@@ -23,6 +23,7 @@ class ButtonDevice:
         self.oldpressed = False
         self.onstart = 0
         self.elapsed = 0
+        self.rolling = False
     
     def process(self, rfdevice):
         """Process the current rfdevice. You should call this in a  loop."""
@@ -36,15 +37,20 @@ class ButtonDevice:
             if now > (self.oldtime + self.debounce):
                 self.oldtime = now
                 self.pressed = False
-        if not self.oldpressed and self.pressed:
-            self.onstart = now
-        if self.oldpressed and not self.pressed:
+        
+        if self.oldpressed and self.pressed: # pressed -> pressed
             self.elapsed = now - self.onstart
-            if self.elapsed < 100000:
-                if self.elapsed > self.long_time:
-                    self.long_press()
-                else:
-                    self.short_press() 
+            if self.elapsed > self.long_time:
+                self.long_rolling()
+        if not self.oldpressed and self.pressed: # not pressed -> pressed
+            self.onstart = now
+        if self.oldpressed and not self.pressed: # pressed -> not pressed
+            self.elapsed = now - self.onstart
+            self.rolling = False
+            if self.elapsed > self.long_time:
+                self.long_press()
+            else:
+                self.short_press() 
         self.oldpressed = self.pressed
  
         
@@ -61,3 +67,8 @@ class DemoButton(ButtonDevice):
         """ called when button is pressed for a long time"""
         dt = datetime.now().strftime('%r %d/%m/%Y')
         print(f"{dt}: LONG")
+    
+    def long_rolling(self):
+        """ called when button is pressed for a long time, in a rolling manner"""
+        dt = datetime.now().strftime('%r %d/%m/%Y')
+        print(f"{dt}: ROLLING")

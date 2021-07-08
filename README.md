@@ -38,5 +38,8 @@ Classes
 `long_press(self)`
 :   called when button is pressed for a long time
 
+`long_rolling(self)`
+:    called when button is pressed for a long time, in a rolling manner
+
 `short_press(self)`
 :   called when button is pressed for a short time

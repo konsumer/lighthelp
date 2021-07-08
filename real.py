@@ -49,10 +49,15 @@ class LightButton(ButtonDevice):
         else:
             self.light.turn_on()
     
+    # TODO: workout long action
+
     def long_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
         print(f"{dt}: LONG")
-        # TODO: workout dim behavior
+    
+    def long_rolling(self):
+        dt = datetime.now().strftime('%r %d/%m/%Y')
+        print(f"{dt}: ROLLING")
 
 # this kind of button turns all lights off on a short-press
 class AllOffButton(ButtonDevice):
@@ -67,6 +72,12 @@ class AllOffButton(ButtonDevice):
         for name in self.lights:
             print(f"{dt}: {name} - Off")
             self.lights[name].turn_off()
+    
+    def long_press(self):
+        pass
+    
+    def long_rolling(self):
+        pass
 
 
 # this is all the buttons we want to listen to
