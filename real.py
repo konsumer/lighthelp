@@ -36,8 +36,8 @@ def get_light(name):
 
 # this kind of button toggles 1 light on short-press, and dims on long-press
 class LightButton(ButtonDevice):
-    def __init__(self, id, name, long_time=4):
-        ButtonDevice.__init__(self, id, long_time)
+    def __init__(self, id, name, debounce=1, long_time=4):
+        ButtonDevice.__init__(self, id, debounce, long_time)
         self.light = get_light(name)       
 
     def short_press(self):
@@ -61,8 +61,8 @@ class LightButton(ButtonDevice):
 
 # this kind of button turns all lights off on a short-press
 class AllOffButton(ButtonDevice):
-    def __init__(self, id, lights):
-        ButtonDevice.__init__(self, id)
+    def __init__(self, id, lights, debounce=1):
+        ButtonDevice.__init__(self, id, debounce)
         self.lights = {}
         for name in lights:
             self.lights[name] = get_light(name)

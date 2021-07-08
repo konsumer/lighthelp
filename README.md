@@ -29,11 +29,9 @@ Classes
 `process(self, rfdevice)`
 :   Process the current rfdevice. You should call this in a  loop.
 
-## `DemoButton(id, debounce=1, long_time=4)`
->   Example class that extends `ButtonDevice` and just prints press-type and time
+#### callbacks
 
-
-### Methods
+Implement these in your sub-class:
 
 `long_press(self)`
 :   called when button is pressed for a long time
