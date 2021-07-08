@@ -25,12 +25,7 @@ class ButtonDevice:
         self.elapsed = 0
     
     def process(self, rfdevice):
-        """Process the current rfdevice. You should call this in a  loop.
-* `id` - The id of the button
-* `debounce` - The time (in seconds) to wait before triggering short/long
-* `long_time` - The time (in seconds) to consider a "long press"
-
-"""
+        """Process the current rfdevice. You should call this in a  loop."""
         now = int(time.time())
         if rfdevice.rx_code_timestamp != self.oldtimestamp:
             self.oldtimestamp = rfdevice.rx_code_timestamp
