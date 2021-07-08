@@ -7,7 +7,7 @@ if press is longer than long_time, fire long
             
 
 class ButtonDevice:
-    def __init__(self, id, short_time=500, long_time=10000):
+    def __init__(self, id, short_time=500, long_time=1495170):
         self.id = id
         self.timestamp = 0
         self.short_time = short_time
@@ -23,9 +23,9 @@ class ButtonDevice:
             if time_elapsed > self.short_time:
                 # either a short or a long
                 if time_elapsed > self.long_time:
+                    print("long")
                     self.on_long()
                 else:
+                    print("short")
                     self.on_short()
 
-
-    
