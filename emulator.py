@@ -6,22 +6,13 @@ This will emulate the lightsiwtch setup
 
 import pygame
 import time
-from button_device import ButtonDevice
+from button_device import DemoButton
 
 pygame.init()
 screen = pygame.display.set_mode((640, 480))
 clock = pygame.time.Clock()
 
-# Use a extension class to setup the callbacks.
-# this is a generic one that will just print
-
-class GenericButton(ButtonDevice):
-    def power_on(self):
-        print("POWER ON CALLBACK")
-    def power_off(self):
-        print("POWER OFF CALLBACK")
-
-switch = GenericButton(818562)
+switch = DemoButton(818562)
 
 # this is the rect drawn on screen for the switch
 rect = pygame.Rect(10, 10, 100, 100)
