@@ -53,11 +53,8 @@ class ButtonDevice:
                 self.short_press() 
         self.oldpressed = self.pressed
  
-        
-
-# this is a button class that just prints the time
-class DemoButton(ButtonDevice):
-    """ Example class that extends `ButtonDevice` and just prints press-type and time"""
+    # implement these in your own subclass:
+    
     def short_press(self):
         """ called when button is pressed for a short time"""
         dt = datetime.now().strftime('%r %d/%m/%Y')

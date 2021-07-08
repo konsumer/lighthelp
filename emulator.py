@@ -10,7 +10,7 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 import pygame
 import time
-from button_device import DemoButton
+from button_device import ButtonDevice
 from random import randint
 
 pygame.init()
@@ -19,7 +19,7 @@ pygame.display.set_caption('Switch Emulator')
 screen = pygame.display.set_mode((320, 210))
 font = pygame.font.Font(pygame.font.get_default_font(), 20)
 
-switch = DemoButton(818562)
+switch = ButtonDevice(818562)
 
 # this is the rect drawn on screen for the switch
 rect = pygame.Rect(100, 50, 100, 100)
