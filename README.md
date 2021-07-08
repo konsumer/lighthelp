@@ -21,8 +21,8 @@ Classes
 >   Handle a radio-button - extend this to create your `short_press()` and `long_press()` methods.
     
 * `id` - The id of the button
-* `debounce` - The time (in seconds) to wait before triggering short/long
-* `long_time` - The time (in seconds) to consider a "long press"
+* `debounce` - The time (in ms) to wait before triggering short/long
+* `long_time` - The time (in ms) to consider a "long press"
 
 ### Methods
 

@@ -11,6 +11,7 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import time
 from button_device import DemoButton
+from random import randint
 
 pygame.init()
 pygame.font.init()
@@ -37,7 +38,6 @@ def main():
     # I use these to fire more process than messages
     i = 0
 
-    print("Pretend spacebar is the button")
     while True:
         i += 1
         pressed = pygame.key.get_pressed()
@@ -49,7 +49,9 @@ def main():
             color = pygame.Color(0, 255, 0)
             # only update rfdevice every 10 frames
             if i % 10 == 0:
-                rfdevice = FakeRFDevice(818562, 320, 1)
+                rfdevice = FakeRFDevice(818562, randint(100, 400), 1)
+            # send some random device
+            switch.process(FakeRFDevice(randint(500000, 999999), randint(100, 400), 1))
         else:
             color = pygame.Color(255, 0, 0)
 
