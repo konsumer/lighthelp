@@ -3,6 +3,7 @@
 import time
 from datetime import datetime
 
+# base-class for all button-actions
 class ButtonDevice:
     def __init__(self, id, debounce=2):
         self.id = id
@@ -13,7 +14,6 @@ class ButtonDevice:
     def process(self, rfdevice):
         """ This processes current rfdevice and fires on_short or on_long"""
         now = int(time.time())
-        dt = datetime.now().strftime('%r %d/%m/%Y')
         if rfdevice.rx_code == self.id:
             if now - self.oldtime < self.debounce:
                 # print("Ignoring Button Press Duplication")
@@ -22,9 +22,17 @@ class ButtonDevice:
                 self.oldtime = now
                 self.inpress = False
                 self.power_on()
-                print(f"{dt}: On")
             else:
                 self.oldtime = now
                 self.inpress = True
                 self.power_off()
-                print(f"{dt}: Off")
+
+# this is a button class that just prints the time
+class DemoButton(ButtonDevice):
+    def power_on(self):
+        dt = datetime.now().strftime('%r %d/%m/%Y')
+        print(f"{dt}: On")
+    
+    def power_off(self):
+        dt = datetime.now().strftime('%r %d/%m/%Y')
+        print(f"{dt}: Off")

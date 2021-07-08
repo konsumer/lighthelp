@@ -2,28 +2,18 @@
 
 import time
 from rpi_rf import RFDevice
-from button_device import ButtonDevice
+from button_device import DemoButton
 
 rfdevice = RFDevice(gpio=27)
 rfdevice.enable_rx()
 
-# Use a extension class to setup the callbacks.
-# this is a generic one that will just print
-
-class GenericButton(ButtonDevice):
-    def power_on(self):
-        print("POWER ON CALLBACK")
-    
-    def power_off(self):
-        print("POWER OFF CALLBACK")
-
 # this is all the buttons we want to listen to
 rooms = [
-    GenericButton(818562),
-    # GenericButton(835186),
-    # GenericButton(835186),
-    # GenericButton(3764962),
-    # GenericButton(3764964)
+    DemoButton(818562),
+    # DemoButton(835186),
+    # DemoButton(835186),
+    # DemoButton(3764962),
+    # DemoButton(3764964)
 ]
 
 # this is the main loop that calls process on all the buttons
