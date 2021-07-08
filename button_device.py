@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
          
 import time
-from datetime import date
+import datetime
 
 class ButtonDevice:
     def __init__(self, id, debounce=2):
@@ -13,7 +13,7 @@ class ButtonDevice:
     def process(self, rfdevice):
         """ This processes current rfdevice and fires on_short or on_long"""
         now = int(time.time())
-        dt = date.today().strftime('%r %d/%m/%Y')
+        dt = datetime.time().strftime('%r %d/%m/%Y')
         if rfdevice.rx_code == self.id:
             if now - self.oldtime < self.debounce:
                 # print("Ignoring Button Press Duplication")
