@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-This will emulate the lightsiwtch setup 
+This will emulate the lightswitch setup 
 """
 
 # disable the hello
@@ -37,6 +37,10 @@ def main():
 
     # I use these to fire more process than messages
     i = 0
+
+    # send initial dummy None timespamp
+    rfdevice.rx_code_timestamp = None
+    switch.process(rfdevice)
 
     while True:
         i += 1

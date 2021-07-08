@@ -16,9 +16,8 @@ class ButtonDevice:
         self.id = id
         self.debounce = debounce
         self.long_time = long_time
-        self.oldtime = int(time.time() * 1000) - debounce
-        self.toggle = False
-        self.oldtimestamp = 0
+        self.oldtime = 0
+        self.oldtimestamp = None
         self.pressed = False
         self.oldpressed = False
         self.onstart = 0
