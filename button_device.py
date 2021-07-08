@@ -9,30 +9,42 @@ class ButtonDevice:
         self.id = id
         self.debounce = debounce
         self.oldtime = int(time.time()) - debounce
-        self.inpress = False
+        self.toggle = False
+        self.oldtimestamp = 0
+        self.pressed = False
+        self.oldpressed = False
+        self.onstart = 0
+        self.elapsed = 0
     
     def process(self, rfdevice):
-        """ This processes current rfdevice and fires on_short or on_long"""
         now = int(time.time())
-        if rfdevice.rx_code == self.id:
-            if now - self.oldtime < self.debounce:
-                # print("Ignoring Button Press Duplication")
-                pass
-            elif self.inpress:
+        if rfdevice.rx_code_timestamp != self.oldtimestamp:
+            self.oldtimestamp = rfdevice.rx_code_timestamp
+            if rfdevice.rx_code == self.id:
+                self.pressed = True
                 self.oldtime = now
-                self.inpress = False
-                self.power_on()
+        else:
+            if now > (self.oldtime + self.debounce):
+                self.oldtime = now
+                self.pressed = False
+        if not self.oldpressed and self.pressed:
+            self.onstart = now
+        if self.oldpressed and not self.pressed:
+            self.elapsed = now - self.onstart
+            if self.elapsed > 5:
+                self.long_press()
             else:
-                self.oldtime = now
-                self.inpress = True
-                self.power_off()
+               self.short_press() 
+        self.oldpressed = self.pressed
+ 
+        
 
 # this is a button class that just prints the time
 class DemoButton(ButtonDevice):
-    def power_on(self):
+    def short_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
-        print(f"{dt}: On")
+        print(f"{dt}: SHORT")
     
-    def power_off(self):
+    def long_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
-        print(f"{dt}: Off")
+        print(f"{dt}: LONG")
