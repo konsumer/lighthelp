@@ -17,16 +17,12 @@ Module button_device
 Classes
 -------
 
-`ButtonDevice(id, debounce=1, long_time=4)`
+## `ButtonDevice(id, debounce=1, long_time=4)`
 :   Handle a radio-button - extend this to create your `short_press()` and `long_press()` methods.
     
 * `id` - The id of the button
 * `debounce` - The time (in seconds) to wait before triggering short/long
 * `long_time` - The time (in seconds) to consider a "long press"
-
-### Descendants
-
-* button_device.DemoButton
 
 ### Methods
 
@@ -36,12 +32,9 @@ Classes
     * `debounce` - The time (in seconds) to wait before triggering short/long
     * `long_time` - The time (in seconds) to consider a "long press"
 
-`DemoButton(id, debounce=1, long_time=4)`
+## `DemoButton(id, debounce=1, long_time=4)`
 :   Example class that extends `ButtonDevice` and just prints press-type and time
 
-### Ancestors (in MRO)
-
-* button_device.ButtonDevice
 
 ### Methods
 
