@@ -1,31 +1,30 @@
 #!/usr/bin/env python3
-            
-"""
-if press is longer than short_time but less than long_time, fire short
-if press is longer than long_time, fire long
-"""         
-            
+         
+import time
+from datetime import date
 
 class ButtonDevice:
-    def __init__(self, id, short_time=500, long_time=1495170):
+    def __init__(self, id, debounce=2):
         self.id = id
-        self.timestamp = 0
-        self.short_time = short_time
-        self.long_time = long_time
-        self.last_button_time = 0
+        self.debounce = debounce
+        self.oldtime = int(time.time()) - debounce
+        self.inpress = False
     
     def process(self, rfdevice):
         """ This processes current rfdevice and fires on_short or on_long"""
-        if rfdevice.rx_code == self.id and rfdevice.rx_code_timestamp != None and rfdevice.rx_code_timestamp != self.timestamp:
-            self.timestamp = rfdevice.rx_code_timestamp
-            time_elapsed = self.timestamp - self.last_button_time
-            self.last_button_time = self.timestamp
-            if time_elapsed > self.short_time:
-                # either a short or a long
-                if time_elapsed > self.long_time:
-                    print("long")
-                    self.on_long()
-                else:
-                    print("short")
-                    self.on_short()
-
+        now = int(time.time())
+        dt = date.today().strftime('%r %d/%m/%Y')
+        if rfdevice.rx_code == self.id:
+            if now - self.oldtime < self.debounce:
+                # print("Ignoring Button Press Duplication")
+                pass
+            elif self.inpress:
+                self.oldtime = now
+                self.inpress = False
+                self.power_on()
+                print(f"{dt}: On")
+            else:
+                self.oldtime = now
+                self.inpress = True
+                self.power_off()
+                print(f"{dt}: Off")

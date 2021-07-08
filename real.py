@@ -11,11 +11,11 @@ rfdevice.enable_rx()
 # this is a generic one that will just print
 
 class GenericButton(ButtonDevice):
-    def on_short(self):
-        print(f"short {self.id}!")
+    def power_on(self):
+        print("POWER ON CALLBACK")
     
-    def on_long(self):
-        print(f"long {self.id}!")
+    def power_off(self):
+        print("POWER OFF CALLBACK")
 
 # this is all the buttons we want to listen to
 rooms = [

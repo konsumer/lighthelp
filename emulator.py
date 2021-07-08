@@ -16,11 +16,10 @@ clock = pygame.time.Clock()
 # this is a generic one that will just print
 
 class GenericButton(ButtonDevice):
-    def on_short(self):
-        print(f"short {self.id}!")
-    
-    def on_long(self):
-        print(f"long {self.id}!")
+    def power_on(self):
+        print("POWER ON CALLBACK")
+    def power_off(self):
+        print("POWER OFF CALLBACK")
 
 switch = GenericButton(818562)
 
