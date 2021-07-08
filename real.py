@@ -3,9 +3,17 @@
 import time
 from rpi_rf import RFDevice
 from button_device import DemoButton
+import signal
+import sys
 
 rfdevice = RFDevice(gpio=27)
 rfdevice.enable_rx()
+
+# cleanup on exit
+def signal_handler(sig, frame):
+    rfdevice.cleanup()
+    sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
 
 # this is all the buttons we want to listen to
 rooms = [
@@ -21,6 +29,3 @@ while True:
     for room in rooms:
         room.process(rfdevice)
     time.sleep(0.01)
-
-# cleanup device
-rfdevice.cleanup()
