@@ -18,10 +18,8 @@ signal.signal(signal.SIGINT, signal_handler)
 # this is all the buttons we want to listen to
 rooms = [
     DemoButton(818562),
-    # DemoButton(835186),
-    # DemoButton(835186),
-    # DemoButton(3764962),
-    # DemoButton(3764964)
+    # DemoButton(3764961),
+    # DemoButton(835186)
 ]
 
 # this is the main loop that calls process on all the buttons
