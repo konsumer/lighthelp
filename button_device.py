@@ -5,9 +5,17 @@ from datetime import datetime
 
 # base-class for all button-actions
 class ButtonDevice:
-    def __init__(self, id, debounce=2):
+    """Handle a radio-button - extend this to create your `short_press()` and `long_press()` methods.
+
+* `id` - The id of the button
+* `debounce` - The time (in seconds) to wait before triggering short/long
+* `long_time` - The time (in seconds) to consider a "long press"
+
+"""
+    def __init__(self, id, debounce = 1, long_time = 4):
         self.id = id
         self.debounce = debounce
+        self.long_time = long_time
         self.oldtime = int(time.time()) - debounce
         self.toggle = False
         self.oldtimestamp = 0
@@ -17,6 +25,12 @@ class ButtonDevice:
         self.elapsed = 0
     
     def process(self, rfdevice):
+        """Process the current rfdevice. You should call this in a  loop.
+* `id` - The id of the button
+* `debounce` - The time (in seconds) to wait before triggering short/long
+* `long_time` - The time (in seconds) to consider a "long press"
+
+"""
         now = int(time.time())
         if rfdevice.rx_code_timestamp != self.oldtimestamp:
             self.oldtimestamp = rfdevice.rx_code_timestamp
@@ -31,7 +45,7 @@ class ButtonDevice:
             self.onstart = now
         if self.oldpressed and not self.pressed:
             self.elapsed = now - self.onstart
-            if self.elapsed > 5:
+            if self.elapsed > self.long_time:
                 self.long_press()
             else:
                self.short_press() 
@@ -41,10 +55,13 @@ class ButtonDevice:
 
 # this is a button class that just prints the time
 class DemoButton(ButtonDevice):
+    """ Example class that extends `ButtonDevice` and just prints press-type and time"""
     def short_press(self):
+        """ called when button is pressed for a short time"""
         dt = datetime.now().strftime('%r %d/%m/%Y')
         print(f"{dt}: SHORT")
     
     def long_press(self):
+        """ called when button is pressed for a long time"""
         dt = datetime.now().strftime('%r %d/%m/%Y')
         print(f"{dt}: LONG")
