@@ -20,33 +20,33 @@ Classes
 `ButtonDevice(id, debounce=1, long_time=4)`
 :   Handle a radio-button - extend this to create your `short_press()` and `long_press()` methods.
     
+* `id` - The id of the button
+* `debounce` - The time (in seconds) to wait before triggering short/long
+* `long_time` - The time (in seconds) to consider a "long press"
+
+### Descendants
+
+* button_device.DemoButton
+
+### Methods
+
+`process(self, rfdevice)`
+:   Process the current rfdevice. You should call this in a  loop.
     * `id` - The id of the button
     * `debounce` - The time (in seconds) to wait before triggering short/long
     * `long_time` - The time (in seconds) to consider a "long press"
 
-    ### Descendants
-
-    * button_device.DemoButton
-
-    ### Methods
-
-    `process(self, rfdevice)`
-    :   Process the current rfdevice. You should call this in a  loop.
-        * `id` - The id of the button
-        * `debounce` - The time (in seconds) to wait before triggering short/long
-        * `long_time` - The time (in seconds) to consider a "long press"
-
 `DemoButton(id, debounce=1, long_time=4)`
 :   Example class that extends `ButtonDevice` and just prints press-type and time
 
-    ### Ancestors (in MRO)
+### Ancestors (in MRO)
 
-    * button_device.ButtonDevice
+* button_device.ButtonDevice
 
-    ### Methods
+### Methods
 
-    `long_press(self)`
-    :   called when button is pressed for a long time
+`long_press(self)`
+:   called when button is pressed for a long time
 
-    `short_press(self)`
-    :   called when button is pressed for a short time
+`short_press(self)`
+:   called when button is pressed for a short time
