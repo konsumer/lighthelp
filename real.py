@@ -33,7 +33,7 @@ def get_light(name):
         raise Exception(f"'{name}' light not found.")
     return light
 
-# amps a single switch to multiple tinytuya light devices
+# maps a single switch to multiple tinytuya light devices
 class MultipleLightButton(ButtonDevice):
     def __init__(self, id, *lights):
         debounce = 250
