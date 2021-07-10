@@ -56,9 +56,9 @@ class MultipleLightButton(ButtonDevice):
         print(f"{dt}: SHORT")
         self.update_status()
         for name in self.lights:
-            # if you need to check for other actions/data, do it here
+            # Edit for the other version of lights, I just added an 'or' on line 61
             # if you really need parallel on/off see https://stackoverflow.com/questions/7207309/how-to-run-functions-in-parallel
-            if (self.statuses[name]['dps']['20'] == True):
+            if (self.statuses[name]['dps']['20'] or ['1'] == True):
                 self.lights[name].turn_off()
             else:
                 self.lights[name].turn_on()
