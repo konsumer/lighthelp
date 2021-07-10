@@ -57,7 +57,7 @@ class MultipleLightButton(ButtonDevice):
 
 # this is all the buttons we want to listen to
 rooms = [
-    MultipleLightButton(3764962, "Leo's Light"),
+#    MultipleLightButton(3764962, "Leo's Light"),
     MultipleLightButton(835186, "Light_1", "Light_2", "Light_3"), # entrance
     MultipleLightButton(818562, "Light_1", "Light_2", "Light_3")  # hallway
 ]
