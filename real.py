@@ -46,13 +46,18 @@ class MultipleLightButton(ButtonDevice):
     def short_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
         print(f"{dt}: SHORT")
+
+        statuses = {}
         for name in self.lights:
-            data = self.lights[name].status()
-            if (data['dps']['20'] == True):
+           statuses[name] = self.lights[name].status()
+
+        for name in self.lights:
+            # if you need to check for other actions/data, do it here
+            # if you really need parallel on/off see https://stackoverflow.com/questions/7207309/how-to-run-functions-in-parallel
+            if (statuses[name]['dps']['20'] == True):
                 self.lights[name].turn_off()
             else:
                 self.lights[name].turn_on()
-        
         
 
 # this is all the buttons we want to listen to
