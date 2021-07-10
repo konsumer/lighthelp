@@ -40,25 +40,62 @@ class MultipleLightButton(ButtonDevice):
         long_time = 2000
         ButtonDevice.__init__(self, id, debounce, long_time)
         self.lights = {}
+        self.statuses = {}
+        self.pressing = False
+        self.fade_up = True
         for name in lights:
             self.lights[name] = get_light(name)
+    
+    def update_status(self):
+        self.statuses = {}
+        for name in self.lights:
+           self.statuses[name] = self.lights[name].status()
     
     def short_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
         print(f"{dt}: SHORT")
-
-        statuses = {}
-        for name in self.lights:
-           statuses[name] = self.lights[name].status()
-
+        self.update_status()
         for name in self.lights:
             # if you need to check for other actions/data, do it here
             # if you really need parallel on/off see https://stackoverflow.com/questions/7207309/how-to-run-functions-in-parallel
-            if (statuses[name]['dps']['20'] == True):
+            if (self.statuses[name]['dps']['20'] == True):
                 self.lights[name].turn_off()
             else:
                 self.lights[name].turn_on()
+    
+    def long_rolling(self):
+        """ called when button is pressed for a long time, in a rolling manner"""
+        dt = datetime.now().strftime('%r %d/%m/%Y')
+        print(f"{dt}: ROLLING")
+
+        if not self.pressing:
+            # one-time code goes here, runs at start of long press
+            self.pressing = True
+            self.update_status()
         
+        # TODO: lookup current fade however you do that, from self.statuses
+        # set new fade to some relationship between current fade and self.elapsed
+        
+        # Warning: all pseudo-code below
+        # imagine self.statuses[name]['fade'] is a value from 0-100
+        # and holds current value
+        for name in self.lights:
+            amountToFade = self.elapsed / 2000
+            if self.fade_up:
+                newfade = self.statuses[name]['fade'] + amountToFade
+            else:
+                newfade = self.statuses[name]['fade'] - amountToFade
+            if newfade > 100:
+                newfade = 100
+            if newfade < 0:
+                newfade = 0
+            self.statuses[name]['fade'] = newfade
+            self.lights[name].set_brightness(newfade)
+    
+    def long_press(self):
+        self.pressing = False
+        self.fade_up = not self.fade_up
+
 
 # this is all the buttons we want to listen to
 rooms = [
