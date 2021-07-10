@@ -43,6 +43,8 @@ class MultipleLightButton(ButtonDevice):
         self.statuses = {}
         self.pressing = False
         self.fade_up = True
+#        self.set_brightness_percentage = {} #broke it ?
+#        self.set_colourtemp_percentage = {} #broke it ?
         for name in lights:
             self.lights[name] = get_light(name)
     
@@ -82,15 +84,28 @@ class MultipleLightButton(ButtonDevice):
         for name in self.lights:
             amountToFade = self.elapsed / 2000
             if self.fade_up:
-                newfade = self.statuses[name]['fade'] + amountToFade
+                newfade = self.lights[name].set_brightness_percentage(+amountToFade)
+                newfade = self.lights[name].set_colourtemp_percentage(+amountToFade)              
             else:
-                newfade = self.statuses[name]['fade'] - amountToFade
-            if newfade > 100:
-                newfade = 100
-            if newfade < 0:
-                newfade = 0
-            self.statuses[name]['fade'] = newfade
-            self.lights[name].set_brightness(newfade)
+                newfade = self.lights[name].set_brightness_percentage(-amountToFade)
+                newfade = self.lights[name].set_colourtemp_percentage(-amountToFade)
+                if newfade > 100:
+                    newfade = 100
+                if newfade < 0:
+                    newfade = 0
+                self.statuses[name]['fade'] = newfade    
+                self.lights[name].set_brightness_percentage(newfade)    
+                
+#                #.set_brightness_percentage(0-100)
+#                newfade = self.statuses[name]['set_brightness_percentage'] + amountToFade
+#            else:
+#                newfade = self.statuses[name].set_brightness_percentage - amountToFade
+#            if newfade > 100:
+#                newfade = 100
+#            if newfade < 0:
+#                newfade = 0
+#            self.statuses[name]['fade'] = newfade
+#            self.lights[name].set_brightness_percentage(newfade)
     
     def long_press(self):
         self.pressing = False
