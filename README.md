@@ -11,6 +11,12 @@ Make sure you have pygame installed for emulator:
 sudo apt install python3-pygame
 ```
 
+For `real.py` to work, you'll need to generate `snapshot.json`:
+
+```sh
+python -m tinytuya wizard 
+```
+
 Module button_device
 ====================
 
