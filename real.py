@@ -6,7 +6,7 @@ from datetime import datetime
 from button_device import ButtonDevice
 import signal
 import sys
-import tinytuya
+from tinytuya import BulbDevice
 import json
 
 with open('snapshot.json') as json_file:
@@ -27,16 +27,40 @@ signal.signal(signal.SIGINT, signal_handler)
 
 # get a light by name
 
+
 def get_light(name):
     for item in jdata["devices"]:
         if item["name"] == name:
-            light = tinytuya.BulbDevice(item["id"], item["ip"], item["key"])
+            light = BulbDevice(item["id"], item["ip"], item["key"])
+            # TODO: check if this needs to be converted to float
             light.set_version(float(item["ver"]))
             light.set_socketPersistent(True)
             return light
 
-# maps a single switch to multiple tinytuya light devices
+# get a more friendly version of status
 
+
+def get_friendly_status(light):
+    status = light.status()
+    out = {}
+    try:
+        out["power"] = status["dps"]["20"]
+    except:
+        out["power"] = status["dps"]["1"]
+
+    # 10-1000
+    try:
+        fade = status["dps"]["22"]
+    except:
+        fade = status["dps"]["3"]
+
+    # percent 0-100
+    out["fade"] = (fade - 10) / 990
+
+    return out
+
+
+# maps a single switch to multiple tinytuya light devices
 class MultipleLightButton(ButtonDevice):
     def __init__(self, id, *lights):
         debounce = 1000
@@ -58,7 +82,7 @@ class MultipleLightButton(ButtonDevice):
         self.statuses = {}
         for name in self.lights:
             try:
-                self.statuses[name] = self.lights[name].status()
+                self.statuses[name] = get_friendly_status(self.lights[name])
             except:
                 print(f"Failed to update status on {name}")
 
@@ -68,13 +92,13 @@ class MultipleLightButton(ButtonDevice):
         print(f"{dt} ({self.id}): SHORT")
         self.update_status()
         for name in self.lights:
-            # Edit for the other version of lights, I just added an 'or' on line 61
-            # if you really need parallel on/off see https://stackoverflow.com/questions/7207309/how-to-run-functions-in-parallel
-
-            if (self.statuses[name]['dps']['20'] == True):
-                self.lights[name].turn_off()
-            else:
-                self.lights[name].turn_on()
+            try:
+                if (self.statuses[name]['power'] == True):
+                    self.lights[name].turn_off()
+                else:
+                    self.lights[name].turn_on()
+            except:
+                print(f"Could not toggle {name}")
 
     def long_rolling(self):
         """ called when button is pressed for a long time, in a rolling manner"""
@@ -88,22 +112,19 @@ class MultipleLightButton(ButtonDevice):
         for name in self.lights:
             try:
                 amountToFade = self.elapsed / 2000
+                newFade = self.statuses[name]['fade']
                 if self.fade_up:
-                    newfade = self.lights[name].set_brightness_percentage(
-                        +amountToFade)
-                    newfade = self.lights[name].set_colourtemp_percentage(
-                        +amountToFade)
+                    newFade = newFade + amountToFade
                 else:
-                    newfade = self.lights[name].set_brightness_percentage(
-                        -amountToFade)
-                    newfade = self.lights[name].set_colourtemp_percentage(
-                        -amountToFade)
-                    if newfade > 100:
-                        newfade = 100
-                    if newfade < 0:
-                        newfade = 0
-                    self.statuses[name]['fade'] = newfade
-                    self.lights[name].set_brightness_percentage(newfade)
+                    newFade = newFade - amountToFade
+
+                if newFade > 100:
+                    newFade = 100
+                if newFade < 0:
+                    newFade = 0
+
+                self.statuses[name]['fade'] = newFade
+                self.lights[name].set_brightness_percentage(newFade)
             except:
                 print(f"Could not fade {name}")
 
