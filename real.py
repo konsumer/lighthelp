@@ -60,7 +60,7 @@ class MultipleLightButton(ButtonDevice):
     
     def short_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
-        print(f"{dt}: SHORT")
+        print(f"{dt} ({self.id}): SHORT")
         self.update_status()
         for name in self.lights:
             # Edit for the other version of lights, I just added an 'or' on line 61
@@ -72,8 +72,9 @@ class MultipleLightButton(ButtonDevice):
     
     def long_rolling(self):
         """ called when button is pressed for a long time, in a rolling manner"""
-        dt = datetime.now().strftime('%r %d/%m/%Y')
-        print(f"{dt}: ROLLING")
+        # commented so longpress is clearer
+        # dt = datetime.now().strftime('%r %d/%m/%Y')
+        # print(f"{dt} ({self.id}): ROLLING")
 
         if not self.pressing:
             # one-time code goes here, runs at start of long press
@@ -113,6 +114,8 @@ class MultipleLightButton(ButtonDevice):
 #            self.lights[name].set_brightness_percentage(newfade)
     
     def long_press(self):
+        dt = datetime.now().strftime('%r %d/%m/%Y')
+        print(f"{dt} ({self.id}): LONG")
         self.pressing = False
         self.fade_up = not self.fade_up
 
