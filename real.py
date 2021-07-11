@@ -54,16 +54,15 @@ def get_friendly_status(light):
         fade = status["dps"]["3"]
 
     # percent 0-100
-    out["fade"] = (fade - 10) / 990
-
+    out["fade"] = ((fade - 10.0) / 990.0) * 100.0
     return out
 
 
 # maps a single switch to multiple tinytuya light devices
 class MultipleLightButton(ButtonDevice):
     def __init__(self, id, *lights):
-        debounce = 1000
-        long_time = 5000
+        debounce = 1000.0
+        long_time = 5000.0
         ButtonDevice.__init__(self, id, debounce, long_time)
         self.button_name = buttons[id]
         self.lights = {}
@@ -83,7 +82,8 @@ class MultipleLightButton(ButtonDevice):
         for name in self.lights:
             try:
                 self.statuses[name] = get_friendly_status(self.lights[name])
-            except:
+            except Exception as err:
+                print(err)
                 print(f"Failed to update status on {name}")
 
     def short_press(self):
@@ -111,20 +111,23 @@ class MultipleLightButton(ButtonDevice):
 
         for name in self.lights:
             try:
-                amountToFade = self.elapsed / 2000
+                amountToFade = self.elapsed / 2000.0
                 newFade = self.statuses[name]['fade']
                 if self.fade_up:
                     newFade = newFade + amountToFade
                 else:
                     newFade = newFade - amountToFade
 
-                if newFade > 100:
-                    newFade = 100
-                if newFade < 0:
-                    newFade = 0
-
+                if newFade > 100.0:
+                    newFade = 100.0
+                if newFade < 0.0:
+                    newFade = 0.0
+                    
+                dt = datetime.now().strftime('%r %d/%m/%Y')
+                print(f"{dt} ({self.button_name}): FADE {newFade}% {amountToFade} {self.elapsed} status {self.statuses[name]['fade']}")
                 self.statuses[name]['fade'] = newFade
-                self.lights[name].set_brightness_percentage(newFade)
+                self.lights[name].set_brightness_percentage(float(newFade))
+
             except:
                 print(f"Could not fade {name}")
 
