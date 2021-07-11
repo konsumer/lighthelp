@@ -27,21 +27,15 @@ signal.signal(signal.SIGINT, signal_handler)
 
 # get a light by name
 
-
 def get_light(name):
-    light = None
     for item in jdata["devices"]:
         if item["name"] == name:
             light = tinytuya.BulbDevice(item["id"], item["ip"], item["key"])
-            # TODO: check if this needs to be converted to float
             light.set_version(float(item["ver"]))
             light.set_socketPersistent(True)
-        if not light:
-            raise Exception(f"'{name}' light not found.")
-    return light
+            return light
 
 # maps a single switch to multiple tinytuya light devices
-
 
 class MultipleLightButton(ButtonDevice):
     def __init__(self, id, *lights):
@@ -56,7 +50,8 @@ class MultipleLightButton(ButtonDevice):
         for name in lights:
             try:
                 self.lights[name] = get_light(name)
-            except:
+            except Exception as err:
+                print(err)
                 print(f"Light not found: {name}")
 
     def update_status(self):
