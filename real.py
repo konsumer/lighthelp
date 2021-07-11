@@ -60,7 +60,7 @@ class MultipleLightButton(ButtonDevice):
     
     def short_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
-        print(f"{dt} ({self.id}): SHORT")
+        print(f"{dt} ({self.id}): SHORT") # how to change print id number to words ie hallway
         self.update_status()
         for name in self.lights:
             # Edit for the other version of lights, I just added an 'or' on line 61
