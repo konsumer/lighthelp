@@ -30,10 +30,10 @@ def get_light(name):
                 light = tinytuya.BulbDevice(item["id"], item["ip"], item["key"])
                 light.set_version(float(item["ver"])) # TODO: check if this needs to be converted to float
                 light.set_socketPersistent(True)
-        if not light:
-            raise Exception(f"'{name}' light not found.")
-    except Exception:
-        print(Exception) 
+            if not light:
+                raise Exception(f"'{name}' light not found.")
+    except OSError as err:
+        print("OS error: {0}".format(err))
         exit
         
     return light
