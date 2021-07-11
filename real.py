@@ -24,20 +24,25 @@ signal.signal(signal.SIGINT, signal_handler)
 # get a light by name
 def get_light(name):
     light = None
-    for item in jdata["devices"]:
-        if item["name"] == name:
-            light = tinytuya.BulbDevice(item["id"], item["ip"], item["key"])
-            light.set_version(float(item["ver"])) # TODO: check if this needs to be converted to float
-            light.set_socketPersistent(True)
-    if not light:
-        raise Exception(f"'{name}' light not found.")
+    try:
+        for item in jdata["devices"]:
+            if item["name"] == name:
+                light = tinytuya.BulbDevice(item["id"], item["ip"], item["key"])
+                light.set_version(float(item["ver"])) # TODO: check if this needs to be converted to float
+                light.set_socketPersistent(True)
+        if not light:
+            raise Exception(f"'{name}' light not found.")
+    except Exception:
+        print(Exception) 
+        exit
+        
     return light
 
 # maps a single switch to multiple tinytuya light devices
 class MultipleLightButton(ButtonDevice):
     def __init__(self, id, *lights):
-        debounce = 250
-        long_time = 2000
+        debounce = 1000
+        long_time = 5000
         ButtonDevice.__init__(self, id, debounce, long_time)
         self.lights = {}
         self.statuses = {}
@@ -114,9 +119,14 @@ class MultipleLightButton(ButtonDevice):
 
 # this is all the buttons we want to listen to
 rooms = [
-#    MultipleLightButton(3764962, "Leo's Light"),
+#    MultipleLightButton(3764961, "Leo's Light"),
     MultipleLightButton(835186, "Light_1", "Light_2", "Light_3"), # entrance
     MultipleLightButton(818562, "Light_1", "Light_2", "Light_3")  # hallway
+# I have these buttons left over. Dont know what todo with them, 
+# maybe some sort of fade selector 
+#    Button3 = '3764962'
+#    Button4 = '3764964'
+#    Button5 = '3764968'
 ]
 
 # this is the main loop that calls process on all the buttons
