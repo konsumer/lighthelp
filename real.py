@@ -32,7 +32,6 @@ def get_light(name):
     for item in jdata["devices"]:
         if item["name"] == name:
             light = BulbDevice(item["id"], item["ip"], item["key"])
-            # TODO: check if this needs to be converted to float
             light.set_version(float(item["ver"]))
             light.set_socketPersistent(True)
             return light
@@ -66,6 +65,7 @@ class MultipleLightButton(ButtonDevice):
         debounce = 1000
         long_time = 5000
         ButtonDevice.__init__(self, id, debounce, long_time)
+        self.button_name = buttons[id]
         self.lights = {}
         self.statuses = {}
         self.pressing = False
@@ -89,7 +89,7 @@ class MultipleLightButton(ButtonDevice):
     def short_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
         # how to change print id number to words ie hallway
-        print(f"{dt} ({self.id}): SHORT")
+        print(f"{dt} ({self.button_name}): SHORT")
         self.update_status()
         for name in self.lights:
             try:
@@ -130,14 +130,20 @@ class MultipleLightButton(ButtonDevice):
 
     def long_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
-        print(f"{dt} ({self.id}): LONG")
+        print(f"{dt} ({self.button_name}): LONG")
         self.pressing = False
         self.fade_up = not self.fade_up
 
+#list of button name
+buttons = {
+    3764961: "Leo's Buttons", 
+    835186: "Entrance", 
+    818562: "Hallway"
+}
 
 # this is all the buttons we want to listen to
 rooms = [
-    #    MultipleLightButton(3764961, "Leo's Light"),
+    MultipleLightButton(3764961, "Leo's Light"),
     MultipleLightButton(835186, "Light_1", "Light_2", "Light_3"),  # entrance
     MultipleLightButton(818562, "Light_1", "Light_2", "Light_3")  # hallway
 ]
