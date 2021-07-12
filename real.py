@@ -166,10 +166,11 @@ class FadeDownButton(MultipleLightButton):
 # list of button name, look up by ID
 buttons = {
 	3764961: "Leo Toggle",
-	835186: "Entrance",
-	818562: "Hallway",
 	3764962: "Leo FadeUp",
-	3764964: "Leo FadeDown"
+	3764964: "Leo FadeDown",
+	
+	835186: "Entrance",
+	818562: "Hallway"
 }
 
 # reverse-dictionary for looking ID up by name
