@@ -16,18 +16,12 @@ rfdevice = RFDevice(gpio=27)
 rfdevice.enable_rx()
 
 # cleanup on exit
-
-
 def signal_handler(sig, frame):
     rfdevice.cleanup()
     sys.exit(0)
-
-
 signal.signal(signal.SIGINT, signal_handler)
 
 # get a light by name
-
-
 def get_light(name):
     for item in jdata["devices"]:
         if item["name"] == name:
@@ -37,8 +31,6 @@ def get_light(name):
             return light
 
 # get a more friendly version of status
-
-
 def get_friendly_status(light):
     status = light.status()
     out = {}
@@ -58,8 +50,6 @@ def get_friendly_status(light):
     return out
 
 # maps a single switch to multiple tinytuya light devices
-
-
 class MultipleLightButton(ButtonDevice):
     def __init__(self, id, *lights, debug=True):
         self.debug = debug
