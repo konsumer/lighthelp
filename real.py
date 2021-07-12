@@ -61,7 +61,8 @@ def get_friendly_status(light):
 
 
 class MultipleLightButton(ButtonDevice):
-    def __init__(self, id, *lights):
+    def __init__(self, id, *lights, debug=True):
+        self.debug = debug
         debounce = 1000.0
         long_time = 5000.0
         ButtonDevice.__init__(self, id, debounce, long_time)
@@ -75,8 +76,23 @@ class MultipleLightButton(ButtonDevice):
             try:
                 self.lights[name] = get_light(name)
             except Exception as err:
-                print(err)
-                print(f"Light not found: {name}")
+                self.log('ERROR', f"Light not found: {name}")
+
+    def log(self, action, message):
+        if self.debug:
+            dt = datetime.now().strftime('%r %d/%m/%Y')
+            print(f"{dt}\t{self.button_name}\t{action}\t{message}")
+
+    def fade_lights(self, amountToFade):
+        for name in self.lights:
+            newFade = self.statuses[name]['fade']
+            newFade = newFade + amountToFade
+            if newFade > 100.0:
+                newFade = 100.0
+            if newFade < 0.0:
+                newFade = 0.0
+            self.statuses[name]['fade'] = newFade
+            self.lights[name].set_brightness_percentage(float(newFade))
 
     def update_status(self):
         self.statuses = {}
@@ -84,22 +100,25 @@ class MultipleLightButton(ButtonDevice):
             try:
                 self.statuses[name] = get_friendly_status(self.lights[name])
             except Exception as err:
-                print(err)
-                print(f"Failed to update status on {name}")
+                self.log('ERROR', f"Failed to update status on {name}")
 
     def short_press(self):
         dt = datetime.now().strftime('%r %d/%m/%Y')
         # how to change print id number to words ie hallway
-        print(f"{dt} ({self.button_name}): SHORT")
         self.update_status()
         for name in self.lights:
+            self.log(
+                'SHORT', f"Toggle {name} to {not self.statuses[name]['power']}")
             try:
+                if self.lights[name]:
+                    self.lights[name] = get_light(name)
+
                 if (self.statuses[name]['power'] == True):
                     self.lights[name].turn_off()
                 else:
                     self.lights[name].turn_on()
             except:
-                print(f"Could not toggle {name}")
+                self.log('ERROR', f"Could not toggle {name}")
 
     def long_rolling(self):
         """ called when button is pressed for a long time, in a rolling manner"""
@@ -113,28 +132,16 @@ class MultipleLightButton(ButtonDevice):
         for name in self.lights:
             try:
                 amountToFade = self.elapsed / 2000.0
-                newFade = self.statuses[name]['fade']
-                if self.fade_up:
-                    newFade = newFade + amountToFade
-                else:
-                    newFade = newFade - amountToFade
-
-                if newFade > 100.0:
-                    newFade = 100.0
-                if newFade < 0.0:
-                    newFade = 0.0
-
-                dt = datetime.now().strftime('%r %d/%m/%Y')
-                print(f"{dt} ({self.button_name}): FADE {newFade}%")
-
-                self.statuses[name]['fade'] = newFade
-                self.lights[name].set_brightness_percentage(float(newFade))
+                if not self.fade_up:
+                    amountToFade = amountToFade * -1
+                self.fade_lights(amountToFade)
+                self.log(
+                    'ROLLING', f"Fade {name} up from {self.statuses[name]['fade']} by {amountToFade}")
             except:
-                print(f"Could not fade {name}")
+                self.log('ERROR', f"Could not fade {name}")
 
     def long_press(self):
-        dt = datetime.now().strftime('%r %d/%m/%Y')
-        print(f"{dt} ({self.button_name}): LONG")
+        self.log('LONG', f"Toggle pressing to False")
         self.pressing = False
         self.fade_up = not self.fade_up
 
@@ -142,34 +149,34 @@ class MultipleLightButton(ButtonDevice):
 class FadeUpButton(MultipleLightButton):
     def short_press(self):
         amountToFade = 10.0
-        dt = datetime.now().strftime('%r %d/%m/%Y')
-        print(f"{dt} ({self.button_name}): SHORT")
         self.update_status()
+        self.fade_lights(amountToFade)
         for name in self.lights:
-            newFade = self.statuses[name]['fade']
-            newFade = newFade + amountToFade
-            if newFade > 100.0:
-                newFade = 100.0
-            self.statuses[name]['fade'] = newFade
-            self.lights[name].set_brightness_percentage(float(newFade))
+            self.log(
+                'SHORT', f"Fade {name} up from {self.statuses[name]['fade']} by {amountToFade}")
+
+    def long_press(self):
+        self.log('LONG', f"Make sure fade up is True")
+        self.pressing = False
+        self.fade_up = True
 
 
 class FadeDownButton(MultipleLightButton):
     def short_press(self):
         amountToFade = -10.0
-        dt = datetime.now().strftime('%r %d/%m/%Y')
-        print(f"{dt} ({self.button_name}): SHORT")
         self.update_status()
+        self.fade_lights(amountToFade)
         for name in self.lights:
-            newFade = self.statuses[name]['fade']
-            newFade = newFade + amountToFade
-            if newFade > 100.0:
-                newFade = 100.0
-            self.statuses[name]['fade'] = newFade
-            self.lights[name].set_brightness_percentage(float(newFade))
+            self.log(
+                'SHORT', f"Fade {name} down from {self.statuses[name]['fade']} by {amountToFade}")
+
+    def long_press(self):
+        self.log('LONG', f"Make sure fade up is False")
+        self.pressing = False
+        self.fade_up = False
 
 
-# list of button name
+# list of button name, look up by ID
 buttons = {
     3764961: "Leo's Buttons",
     835186: "Entrance",
@@ -178,14 +185,19 @@ buttons = {
     3764964: "Leo FadeDown"
 }
 
+# reverse-dictionary for looking ID up by name
+b = {}
+for id in buttons:
+    b[buttons[id]] = id
+
 # this is all the buttons we want to listen to
 rooms = [
-    MultipleLightButton(3764961, "Leo's Light"),
-    FadeUpButton(3764962, "Leo's Light"),
-    FadeDownButton(3764964, "Leo's Light"),
+    MultipleLightButton(b["Leo's Buttons"], "Leo's Light"),
+    FadeUpButton(b["Leo FadeUp"], "Leo's Light"),
+    FadeDownButton(b["Leo FadeDown"], "Leo's Light"),
 
-    MultipleLightButton(835186, "Light_1", "Light_2", "Light_3"),  # entrance
-    MultipleLightButton(818562, "Light_1", "Light_2", "Light_3")  # hallway
+    MultipleLightButton(b["Entrance"], "Light_1", "Light_2", "Light_3"),
+    MultipleLightButton(b["Hallway"], "Light_1", "Light_2", "Light_3")
 ]
 
 # this is the main loop that calls process on all the buttons
