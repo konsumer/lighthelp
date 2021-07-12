@@ -156,7 +156,7 @@ class FadeDownButton(MultipleLightButton):
 		self.fade_lights(amountToFade)
 		for name in self.lights:
 			self.log('SHORT', f"Fade {name} down from {self.statuses[name]['fade']} by {amountToFade}")
-	
+
 	def long_press(self):
 		self.log('LONG', "Make sure fade up is False")
 		self.pressing = False
@@ -165,7 +165,7 @@ class FadeDownButton(MultipleLightButton):
 
 # list of button name, look up by ID
 buttons = {
-	3764961: "Leo's Buttons",
+	3764961: "Leo Toggle",
 	835186: "Entrance",
 	818562: "Hallway",
 	3764962: "Leo FadeUp",
@@ -179,7 +179,7 @@ for id in buttons:
 
 # this is all the buttons we want to listen to
 rooms = [
-	MultipleLightButton(b["Leo's Buttons"], "Leo's Light"),
+	MultipleLightButton(b["Leo Toggle"], "Leo's Light"),
 	FadeUpButton(b["Leo FadeUp"], "Leo's Light"),
 	FadeDownButton(b["Leo FadeDown"], "Leo's Light"),
 
