@@ -75,7 +75,7 @@ class MultipleLightButton(ButtonDevice):
         for name in lights:
             try:
                 self.lights[name] = get_light(name)
-            except Exception as err:
+            except:
                 self.log('ERROR', f"Light not found: {name}")
 
     def log(self, action, message):
@@ -99,11 +99,10 @@ class MultipleLightButton(ButtonDevice):
         for name in self.lights:
             try:
                 self.statuses[name] = get_friendly_status(self.lights[name])
-            except Exception as err:
+            except:
                 self.log('ERROR', f"Failed to update status on {name}")
 
     def short_press(self):
-        dt = datetime.now().strftime('%r %d/%m/%Y')
         # how to change print id number to words ie hallway
         self.update_status()
         for name in self.lights:
@@ -133,7 +132,7 @@ class MultipleLightButton(ButtonDevice):
             try:
                 amountToFade = self.elapsed / 2000.0
                 if not self.fade_up:
-                    amountToFade = amountToFade * -1
+                    amountToFade = amountToFade * -1.0
                 self.fade_lights(amountToFade)
                 self.log(
                     'ROLLING', f"Fade {name} up from {self.statuses[name]['fade']} by {amountToFade}")
@@ -141,7 +140,7 @@ class MultipleLightButton(ButtonDevice):
                 self.log('ERROR', f"Could not fade {name}")
 
     def long_press(self):
-        self.log('LONG', f"Toggle pressing to False")
+        self.log('LONG', "Toggle pressing to False")
         self.pressing = False
         self.fade_up = not self.fade_up
 
@@ -154,9 +153,8 @@ class FadeUpButton(MultipleLightButton):
         for name in self.lights:
             self.log(
                 'SHORT', f"Fade {name} up from {self.statuses[name]['fade']} by {amountToFade}")
-
     def long_press(self):
-        self.log('LONG', f"Make sure fade up is True")
+        self.log('LONG', "Make sure fade up is True")
         self.pressing = False
         self.fade_up = True
 
@@ -169,9 +167,8 @@ class FadeDownButton(MultipleLightButton):
         for name in self.lights:
             self.log(
                 'SHORT', f"Fade {name} down from {self.statuses[name]['fade']} by {amountToFade}")
-
     def long_press(self):
-        self.log('LONG', f"Make sure fade up is False")
+        self.log('LONG', "Make sure fade up is False")
         self.pressing = False
         self.fade_up = False
 
