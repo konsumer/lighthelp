@@ -57,8 +57,9 @@ def get_friendly_status(light):
     out["fade"] = ((fade - 10.0) / 990.0) * 100.0
     return out
 
-
 # maps a single switch to multiple tinytuya light devices
+
+
 class MultipleLightButton(ButtonDevice):
     def __init__(self, id, *lights):
         debounce = 1000.0
@@ -122,12 +123,12 @@ class MultipleLightButton(ButtonDevice):
                     newFade = 100.0
                 if newFade < 0.0:
                     newFade = 0.0
-                    
+
                 dt = datetime.now().strftime('%r %d/%m/%Y')
-                print(f"{dt} ({self.button_name}): FADE {newFade}% {amountToFade} {self.elapsed} status {self.statuses[name]['fade']}")
+                print(f"{dt} ({self.button_name}): FADE {newFade}%")
+
                 self.statuses[name]['fade'] = newFade
                 self.lights[name].set_brightness_percentage(float(newFade))
-
             except:
                 print(f"Could not fade {name}")
 
@@ -137,16 +138,52 @@ class MultipleLightButton(ButtonDevice):
         self.pressing = False
         self.fade_up = not self.fade_up
 
-#list of button name
+
+class FadeUpButton(MultipleLightButton):
+    def short_press(self):
+        amountToFade = 10.0
+        dt = datetime.now().strftime('%r %d/%m/%Y')
+        print(f"{dt} ({self.button_name}): SHORT")
+        self.update_status()
+        for name in self.lights:
+            newFade = self.statuses[name]['fade']
+            newFade = newFade + amountToFade
+            if newFade > 100.0:
+                newFade = 100.0
+            self.statuses[name]['fade'] = newFade
+            self.lights[name].set_brightness_percentage(float(newFade))
+
+
+class FadeDownButton(MultipleLightButton):
+    def short_press(self):
+        amountToFade = -10.0
+        dt = datetime.now().strftime('%r %d/%m/%Y')
+        print(f"{dt} ({self.button_name}): SHORT")
+        self.update_status()
+        for name in self.lights:
+            newFade = self.statuses[name]['fade']
+            newFade = newFade + amountToFade
+            if newFade > 100.0:
+                newFade = 100.0
+            self.statuses[name]['fade'] = newFade
+            self.lights[name].set_brightness_percentage(float(newFade))
+
+
+# list of button name
 buttons = {
-    3764961: "Leo's Buttons", 
-    835186: "Entrance", 
-    818562: "Hallway"
+    3764961: "Leo's Buttons",
+    835186: "Entrance",
+    818562: "Hallway",
+    3764962: "Leo FadeUp",
+    3764964: "Leo FadeDown"
 }
 
 # this is all the buttons we want to listen to
 rooms = [
     MultipleLightButton(3764961, "Leo's Light"),
+    FadeUpButton(3764962, "Leo's Light"),
+    FadeDownButton(3764964, "Leo's Light"),
+
     MultipleLightButton(835186, "Light_1", "Light_2", "Light_3"),  # entrance
     MultipleLightButton(818562, "Light_1", "Light_2", "Light_3")  # hallway
 ]
