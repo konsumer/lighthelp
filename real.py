@@ -14,7 +14,10 @@ with open('snapshot.json') as json_file:
 
 rfdevice = RFDevice(gpio=27)
 rfdevice.enable_rx()
-
+#-----timer------
+t = 10
+s = 5
+#--------------------
 # cleanup on exit
 def signal_handler(sig, frame):
     rfdevice.cleanup()
@@ -47,13 +50,14 @@ def get_friendly_status(light):
 
     # percent 0-100
     out["fade"] = ((fade - 10.0) / 990.0) * 100.0
+    time.sleep(t)
     return out
 
 # maps a single switch to multiple tinytuya light devices
 class MultipleLightButton(ButtonDevice):
     def __init__(self, id, *lights, debug=True):
         self.debug = debug
-        debounce = 1000.0
+        debounce = 250.0
         long_time = 5000.0
         ButtonDevice.__init__(self, id, debounce, long_time)
         self.button_name = buttons[id]
@@ -83,13 +87,16 @@ class MultipleLightButton(ButtonDevice):
                 newFade = 0.0
             self.statuses[name]['fade'] = newFade
             self.lights[name].set_brightness_percentage(float(newFade))
+            time.sleep(t)
 
     def update_status(self):
         self.statuses = {}
         for name in self.lights:
             try:
                 self.statuses[name] = get_friendly_status(self.lights[name])
-            except:
+                time.sleep(s)
+            except Exception as err:
+                print(err)
                 self.log('ERROR', f"Failed to update status on {name}")
 
     def short_press(self):
@@ -124,6 +131,7 @@ class MultipleLightButton(ButtonDevice):
                 if not self.fade_up:
                     amountToFade = amountToFade * -1.0
                 self.fade_lights(amountToFade)
+                time.sleep(s)
                 self.log(
                     'ROLLING', f"Fade {name} up from {self.statuses[name]['fade']} by {amountToFade}")
             except:
@@ -140,6 +148,7 @@ class FadeUpButton(MultipleLightButton):
         amountToFade = 10.0
         self.update_status()
         self.fade_lights(amountToFade)
+        time.sleep(s)
         for name in self.lights:
             self.log(
                 'SHORT', f"Fade {name} up from {self.statuses[name]['fade']} by {amountToFade}")
@@ -154,6 +163,7 @@ class FadeDownButton(MultipleLightButton):
         amountToFade = -10.0
         self.update_status()
         self.fade_lights(amountToFade)
+        time.sleep(s)
         for name in self.lights:
             self.log(
                 'SHORT', f"Fade {name} down from {self.statuses[name]['fade']} by {amountToFade}")
