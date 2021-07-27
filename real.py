@@ -94,7 +94,7 @@ class MultipleLightButton(ButtonDevice):
         for name in self.lights:
             try:
                 self.statuses[name] = get_friendly_status(self.lights[name])
-                time.sleep(s)
+#                time.sleep(s)
             except Exception as err:
                 print(err)
                 self.log('ERROR', f"Failed to update status on {name}")
@@ -176,7 +176,7 @@ class FadeDownButton(MultipleLightButton):
 class MultipleLightButton(ButtonDevice):
 	def __init__(self, id, *lights, debug=True):
 		self.debug = debug
-		debounce = 1000.0
+		debounce = 250.0
 		long_time = 5000.0
 		ButtonDevice.__init__(self, id, debounce, long_time)
 		self.button_name = buttons[id]
